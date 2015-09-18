@@ -1,0 +1,69 @@
+#!/usr/bin/env python
+#
+#   bestman callout adler32
+#
+#   This reads or sets the extended attribute user.adler32 for files
+#
+#   use:
+#   adler32.py <filename>
+#
+#   returns an error if the path is a directory
+
+BLOCKSIZE = 32 * 1024 * 1024
+
+import os
+import sys
+import zlib   
+import errno  
+import xattr  
+
+def adler32(file):
+        val = 1
+        fp = open(file)
+        while True:
+                data = fp.read(BLOCKSIZE)
+                if not data:
+                        break
+                val = zlib.adler32(data, val)
+        if val < 0:
+                val += 2**32
+        return hex(val)[2:10].zfill(8).lower()
+
+def main():
+        if len(sys.argv) == 1: 
+                sys.stderr.write('No input path provided\n')
+                sys.exit(1)
+
+        path = sys.argv[1]
+
+        checksum = None
+        try:
+                checksum = xattr.get(path, 'user.adler32')
+                if checksum != '':
+                        sys.stdout.write(checksum + "\n")
+                        sys.exit(0)
+        except IOError, e:
+                if e.errno != errno.ENODATA:
+                        sys.stderr.write("error computing adler32 for %ssys.argv,status,adler32:%s|%s | %s\n" %(path, sys.argv, str(e), checksum))
+                        sys.exit(1)
+
+        try:
+                checksum = adler32(path)
+        except:
+                sys.stderr.write("error computing adler32 for %s sys.argv,status,adler32:%s|%s | %s\n" %(path, sys.argv, -1))
+                sys.exit(1)
+
+        try:
+                stat_info = os.stat(path)
+                uid = stat_info.st_uid
+                os.system("sudo -u \\#%s /usr/bin/setfattr -n 'user.adler32' -v '%s' %s" %(uid, checksum, path))
+                #xattr.set(path, 'user.adler32', checksum)
+        except:
+                sys.stderr.write("error setting adler32 for %s\n" %(path))
+                sys.exit(1)
+
+        sys.stdout.write(checksum + "\n")
+
+if __name__ == '__main__':
+        main()
+
