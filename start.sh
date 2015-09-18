@@ -21,6 +21,13 @@ then
     sed -i 's/^group:.*/group:	files ldap/' /etc/nsswitch.conf
 fi
 
+if [ $"x$REMOVE_BESTMAN_USER" != "x" ]; then
+    sed -i 'd/^bestman/d' /etc/passwd
+    sed -i 'd/^bestman/d' /etc/group
+    sed -i 'd/^bestman/d' /etc/gshadow
+    sed -i 'd/^bestman/d' /etc/shadow
+fi
+
 mkdir -p /srv/bestman2/etc/grid-security
 mkdir -p /srv/bestman2/var/log/bestman2
 
