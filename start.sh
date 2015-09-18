@@ -22,10 +22,10 @@ then
 fi
 
 if [ $"x$REMOVE_BESTMAN_USER" != "x" ]; then
-    sed -i 'd/^bestman/d' /etc/passwd
-    sed -i 'd/^bestman/d' /etc/group
-    sed -i 'd/^bestman/d' /etc/gshadow
-    sed -i 'd/^bestman/d' /etc/shadow
+    sed -i '/^bestman/d' /etc/passwd
+    sed -i '/^bestman/d' /etc/group
+    sed -i '/^bestman/d' /etc/gshadow
+    sed -i '/^bestman/d' /etc/shadow
 fi
 
 mkdir -p /srv/bestman2/etc/grid-security
@@ -44,7 +44,7 @@ then
     cp -a /etc/grid-security/gsi-authz.conf.bak /srv/bestman2/etc/grid-security/gsi-authz.conf
 fi
 
-rm -f /srv/bestman2/etc/grid-security/gsi-authz.conf || true
+rm -f /etc/grid-security/gsi-authz.conf || true
 ln -s /srv/bestman2/etc/grid-security/gsi-authz.conf /etc/grid-security/gsi-authz.conf
 
 : ${securePort:=8443}
@@ -52,20 +52,24 @@ ln -s /srv/bestman2/etc/grid-security/gsi-authz.conf /etc/grid-security/gsi-auth
 : ${localPathListToBlock:='/root;/etc;/var;/usr;/srv;/boot'}
 
 if [ $"x$staticTokenList" != "x" ]; then
-    sed -i '@^staticTokenList=.*@d' /etc/bestman2/conf/bestman2.rc
+    sed -i '/^staticTokenList=.*/d' /etc/bestman2/conf/bestman2.rc
     echo staticTokenList="$staticTokenList" >> /etc/bestman2/conf/bestman2.rc
 fi
 
 for x in GUMSserviceURL supportedProtocolList securePort localPathListAllowed localPathListToBlock; do
     eval v=\$$x
-    sed -i '@^'$x'=.*@d' /etc/bestman2/conf/bestman2.rc
+    sed -i '/^'$x'=.*/d' /etc/bestman2/conf/bestman2.rc
     echo "$x=$v" >> /etc/bestman2/conf/bestman2.rc
 done
+
+chown bestman /etc/grid-security/bestman/bestmancert.pem
+chown bestman /etc/grid-security/bestman/bestmankey.pem
 
 export LCMAPS_LOG_FILE=/srv/bestman2/var/log/lcmaps
 
 . /etc/sysconfig/bestman2
 export BESTMAN_LOG=/srv/bestman2/var/log/bestman2/bestman2.log
-ulimit -n 65536
+#ulimit -n 65536
+chown bestman /srv/bestman2/var/log/bestman2
 cd /tmp
 su - bestman -c /bin/bash -c "/usr/sbin/bestman.server $BESTMAN_OPTIONS 2>> $BESTMAN_LOG  >> $BESTMAN_LOG"
