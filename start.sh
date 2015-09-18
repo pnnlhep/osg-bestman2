@@ -56,6 +56,15 @@ if [ $"x$staticTokenList" != "x" ]; then
     echo staticTokenList="$staticTokenList" >> /etc/bestman2/conf/bestman2.rc
 fi
 
+if [ $"x$ADLER32" != "x" ]; then
+    sed -i '/^showChecksumWhenListingFile=.*/d' /etc/bestman2/conf/bestman2.rc
+    sed -i '/^defaultChecksumType=.*/d' /etc/bestman2/conf/bestman2.rc
+    sed -i '/^hexChecksumCommand=.*/d' /etc/bestman2/conf/bestman2.rc
+    echo showChecksumWhenListingFile=true >> /etc/bestman2/conf/bestman2.rc
+    echo defaultChecksumType=adler32 >> /etc/bestman2/conf/bestman2.rc
+    echo hexChecksumCommand=/usr/bin/adler32 >> /etc/bestman2/conf/bestman2.rc
+fi
+
 for x in GUMSserviceURL supportedProtocolList securePort localPathListAllowed localPathListToBlock; do
     eval v=\$$x
     sed -i '/^'$x'=.*/d' /etc/bestman2/conf/bestman2.rc
