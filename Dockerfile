@@ -9,5 +9,6 @@ RUN chmod +x /etc/start.sh
 RUN cp -a /etc/lcmaps.db /etc/lcmaps.db.bak
 RUN echo globus_mapping liblcas_lcmaps_gt4_mapping.so lcmaps_callout echo > /etc/grid-security/gsi-authz.conf.bak
 ADD srm /etc/sudoers.d/srm
+RUN sed -i 's/&$//' /usr/sbin/bestman.server
 
 CMD ["/etc/start.sh"]
