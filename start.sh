@@ -62,12 +62,16 @@ for x in GUMSserviceURL supportedProtocolList securePort localPathListAllowed lo
     echo "$x=$v" >> /etc/bestman2/conf/bestman2.rc
 done
 
+sed -i 's@^EventLogLocation=.*@EventLogLocation=/srv/bestman2/var/log/bestman2@' /etc/bestman2/conf/bestman2.rc
+
 chown bestman /etc/grid-security/bestman/bestmancert.pem
 chown bestman /etc/grid-security/bestman/bestmankey.pem
 
 export LCMAPS_LOG_FILE=/srv/bestman2/var/log/lcmaps
 
 . /etc/sysconfig/bestman2
+touch /var/run/bestman2.pid
+chown bestman /var/run/bestman2.pid
 export BESTMAN_LOG=/srv/bestman2/var/log/bestman2/bestman2.log
 #ulimit -n 65536
 chown bestman /srv/bestman2/var/log/bestman2

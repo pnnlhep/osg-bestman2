@@ -1,7 +1,7 @@
 FROM kfox1111/osg-base
 MAINTAINER Kevin Fox "Kevin.Fox@pnnl.gov"
 
-RUN yum install -y osg-se-bestman lcmaps-plugins-gums-client lcmaps-plugins-basic lcmaps-plugins-verify-proxy pyxattr
+RUN yum install -y osg-se-bestman lcmaps-plugins-gums-client lcmaps-plugins-basic lcmaps-plugins-verify-proxy pyxattr sudo
 ADD ./adler32 /usr/bin/adler32
 RUN chmod +x /usr/bin/adler32
 ADD ./start.sh /etc/start.sh
