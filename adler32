@@ -46,7 +46,9 @@ def main():
                 if e.errno != errno.ENODATA:
                         sys.stderr.write("error computing adler32 for %ssys.argv,status,adler32:%s|%s | %s\n" %(path, sys.argv, str(e), checksum))
                         sys.exit(1)
-
+        if os.getenv('adler32_calc_checksum') == None:
+                sys.stderr.write("error getting adler32 for %s\n" %(path))
+                sys.exit(1)
         try:
                 checksum = adler32(path)
         except:
