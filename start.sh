@@ -50,6 +50,7 @@ ln -s /srv/bestman2/etc/grid-security/gsi-authz.conf /etc/grid-security/gsi-auth
 : ${securePort:=8443}
 : ${localPathListAllowed:=/se}
 : ${localPathListToBlock:='/root;/etc;/var;/usr;/srv;/boot'}
+: ${javaHeap:=1024}
 
 if [ $"x$staticTokenList" != "x" ]; then
     sed -i '/^staticTokenList=.*/d' /etc/bestman2/conf/bestman2.rc
@@ -70,6 +71,9 @@ for x in GUMSserviceURL supportedProtocolList securePort localPathListAllowed lo
     sed -i '/^'$x'=.*/d' /etc/bestman2/conf/bestman2.rc
     echo "$x=$v" >> /etc/bestman2/conf/bestman2.rc
 done
+
+sed -i '/^BESTMAN_MAX_JAVA_HEAP=/d' /etc/sysconfig/bestman2
+echo "BESTMAN_MAX_JAVA_HEAP=$javaHeap" >> /etc/sysconfig/bestman2
 
 sed -i 's@^EventLogLocation=.*@EventLogLocation=/srv/bestman2/var/log/bestman2@' /etc/bestman2/conf/bestman2.rc
 
