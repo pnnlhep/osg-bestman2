@@ -1,7 +1,11 @@
-FROM kfox1111/osg-base
+FROM pnnlhep/osg-base
 MAINTAINER Kevin Fox "Kevin.Fox@pnnl.gov"
 
-RUN yum install -y osg-se-bestman lcmaps-plugins-gums-client lcmaps-plugins-basic lcmaps-plugins-verify-proxy pyxattr sudo attr
+RUN \
+  sed -i 's@osg/3.2@osg/3.3@g' /etc/yum.repos.d/osg-el6* && \
+  yum upgrade -y
+RUN \
+  yum install -y osg-se-bestman lcmaps-plugins-gums-client lcmaps-plugins-basic lcmaps-plugins-verify-proxy pyxattr sudo attr
 ADD ./adler32 /usr/bin/adler32
 RUN chmod +x /usr/bin/adler32
 ADD ./start.sh /etc/start.sh

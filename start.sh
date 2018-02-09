@@ -4,6 +4,8 @@
 
 export LCMAPS_DEBUG_LEVEL
 
+if [ "x$SKIP_ENV" = "x" ]; then
+
 if [ "x$GUMSserviceURL" = "x" ]; then
     echo You must specify GUMSserviceURL
     exit -1
@@ -80,13 +82,36 @@ sed -i 's@^EventLogLocation=.*@EventLogLocation=/srv/bestman2/var/log/bestman2@'
 chown bestman /etc/grid-security/bestman/bestmancert.pem
 chown bestman /etc/grid-security/bestman/bestmankey.pem
 
-export LCMAPS_LOG_FILE=/srv/bestman2/var/log/lcmaps
+fi #end "x$SKIP_ENV" = "x" ]
 
-. /etc/sysconfig/bestman2
 touch /var/run/bestman2.pid
 chown bestman /var/run/bestman2.pid
-export BESTMAN_LOG=/srv/bestman2/var/log/bestman2/bestman2.log
-#ulimit -n 65536
+mkdir -p /srv/bestman2/var/log/bestman2
 chown bestman /srv/bestman2/var/log/bestman2
+
+(
+if [ "x$START_WAIT_FILE" != "x" ]; then
+	while true; do
+		[ -f "$START_WAIT_FILE" ] && break
+		sleep 1
+	done
+fi
+export LCMAPS_LOG_FILE=/srv/bestman2/var/log/lcmaps
+. /etc/sysconfig/bestman2
+if [ -f /etc/sysconfig/bestman2.1 ]; then
+  . /etc/sysconfig/bestman2.1
+fi
+if [ -f /etc/start.extra.sh ]; then
+  . /etc/start.extra.sh
+fi
 cd /tmp
-su - bestman -c /bin/bash -c "/usr/sbin/bestman.server $BESTMAN_OPTIONS 2>> $BESTMAN_LOG  >> $BESTMAN_LOG"
+exec su - bestman -c /bin/bash -c "/usr/sbin/bestman.server $BESTMAN_OPTIONS"
+) & pid=$!
+
+trap "kill $pid" TERM
+echo $pid > /var/run/cbestman2.pid
+if [ "x$START_WAIT_DONE_FILE" != "x" ]; then
+	touch "$START_WAIT_DONE_FILE"
+fi
+wait $pid
+[ -f /etc/shutdown.sh ] && bash /etc/shutdown.sh
