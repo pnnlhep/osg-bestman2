@@ -3,7 +3,7 @@ MAINTAINER Kevin Fox "Kevin.Fox@pnnl.gov"
 
 RUN \
   #sed -i 's@osg/3.2@osg/3.3@g' /etc/yum.repos.d/osg-el6* && \
-  sed -i 's@repo.grid.iu.edu/mirror@repo.opensciencegrid.org@' /etc/yum.repos.d/osg-el6* && \
+  sed -i 's@repo.grid.iu.edu@repo.opensciencegrid.org@' /etc/yum.repos.d/osg-el6* && \
   yum upgrade -y
 RUN \
   yum install -y osg-se-bestman lcmaps-plugins-gums-client lcmaps-plugins-basic lcmaps-plugins-verify-proxy pyxattr sudo attr globus-proxy-utils globus-gass-copy-progs && \
