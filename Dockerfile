@@ -8,7 +8,7 @@ RUN \
   yum install -y osg-se-bestman lcmaps-plugins-gums-client lcmaps-plugins-basic lcmaps-plugins-verify-proxy pyxattr sudo attr globus-proxy-utils globus-gass-copy-progs && \
   yum install -y java-1.8.0-openjdk-headless.x86_64 java-1.8.0-openjdk java-1.8.0-openjdk-devel-1.8.0.191.b12-0.el6_10.x86_64 && \
   rm -f /etc/alternatives/java_sdk && \
-  ln -s /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.191.b12-0.el6_10.x86_64/ /etc/alternatives/java_sdk
+  ln -s /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.191.b12-0.el6_10.x86_64/ /etc/alternatives/java_sdk && \
   ls -l /etc/alternatives/java_sdk/bin
 ADD ./adler32 /usr/bin/adler32
 RUN chmod +x /usr/bin/adler32
